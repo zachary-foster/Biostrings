@@ -83,3 +83,4 @@ Collate: 00datacache.R
 	MultipleAlignment.R
 	matchprobes.R
 	zzz.R
+RoxygenNote: 7.0.2.9000

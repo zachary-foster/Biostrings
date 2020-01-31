@@ -19,7 +19,8 @@
 }
 
 \usage{
-matchProbePair(Fprobe, Rprobe, subject, algorithm="auto", logfile=NULL, verbose=FALSE)
+matchProbePair(Fprobe, Rprobe, subject, max.mismatch=0, min.mismatch=0, with.indels=FALSE,
+               fixed=TRUE, algorithm="auto", logfile=NULL, verbose=FALSE)
 }
 
 \arguments{
@@ -32,6 +33,37 @@ matchProbePair(Fprobe, Rprobe, subject, algorithm="auto", logfile=NULL, verbose=
   \item{subject}{
     A \link{DNAString} object (or an \link{XStringViews} object
     with a \link{DNAString} subject) containing the target sequence.
+  }
+  \item{max.mismatch, min.mismatch}{
+    The maximum and minimum number of mismatching letters allowed (see
+    \code{?`\link{lowlevel-matching}`} for the details).
+    If non-zero, an algorithm that supports inexact matching is used.
+  }
+  \item{with.indels}{
+    If \code{TRUE} then indels are allowed. In that case, \code{min.mismatch}
+    must be \code{0} and \code{max.mismatch} is interpreted as the maximum
+    "edit distance" allowed between the pattern and a match.
+    Note that in order to avoid pollution by redundant matches,
+    only the "best local matches" are returned.
+    Roughly speaking, a "best local match" is a match that is locally
+    both the closest (to the pattern P) and the shortest.
+    More precisely, a substring S' of the subject S is a "best local match" iff:
+    \preformatted{
+       (a) nedit(P, S') <= max.mismatch
+       (b) for every substring S1 of S':
+               nedit(P, S1) > nedit(P, S')
+       (c) for every substring S2 of S that contains S':
+               nedit(P, S2) >= nedit(P, S')
+    }
+    One nice property of "best local matches" is that their first and last
+    letters are guaranteed to match the letters in P that they align with.
+  }
+  \item{fixed}{
+    If \code{TRUE} (the default), an IUPAC ambiguity code in a probe sequence
+    can only match the same code in the subject, and vice versa.
+    If \code{FALSE}, an IUPAC ambiguity code in a probe sequence can match
+    any letter in the subject that is associated with the code, and 
+    vice versa. See \code{?`\link{lowlevel-matching}`} for more information.
   }
   \item{algorithm}{
     One of the following: \code{"auto"}, \code{"naive-exact"},
